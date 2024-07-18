@@ -30,7 +30,7 @@ export default function DesignConfigurator({configId, imageUrl, imageDimensions}
 	const {toast} = useToast();
 	const router = useRouter();
 
-	const {mutate: saveConfig} = useMutation({
+	const {mutate: saveConfig, isPending} = useMutation({
 		mutationKey: ['save-config'],
 		mutationFn: async (args: saveConfigArgs) => {
 			await Promise.all([saveConfiguration(), saveConfigAction(args)]);
@@ -43,9 +43,6 @@ export default function DesignConfigurator({configId, imageUrl, imageDimensions}
 			});
 		},
 		onSuccess: () => {
-			toast({
-				title: 'Success',
-			});
 			router.push(`/configure/preview?id=${configId}`);
 		},
 	});
@@ -335,6 +332,9 @@ export default function DesignConfigurator({configId, imageUrl, imageDimensions}
 								{formatPrice((BASE_PRICE + options.finish.price + options.material.price) / 100)}
 							</p>
 							<Button
+								isLoading={isPending}
+								disabled={isPending}
+								loadingText='Saving configuration'
 								onClick={() =>
 									saveConfig({
 										configId,
